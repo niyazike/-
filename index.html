@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Фото на паспорт — студия с автозаменой фона</title>
+    <title>Фото на паспорт</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,500..600&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -39,7 +39,6 @@
             margin: 0;
             min-height: 100vh;
             padding: 48px 20px 32px;
-            padding-bottom: 120px; /* Отступ снизу для контента */
         }
 
         .grain {
@@ -246,50 +245,6 @@
             background: rgba(185, 134, 46, .07);
         }
 
-        .processing-overlay {
-            position: absolute;
-            inset: 16px;
-            border-radius: 6px;
-            background: rgba(250, 246, 238, .94);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 14px;
-            z-index: 20;
-            text-align: center;
-        }
-
-        .processing-overlay[hidden] { display: none; }
-
-        .processing-rings {
-            position: relative;
-            width: 56px;
-            height: 56px;
-        }
-        .processing-rings span {
-            position: absolute;
-            inset: 0;
-            border-radius: 50%;
-            border: 2px solid var(--accent);
-            opacity: 0;
-            animation: ping 1.8s ease-out infinite;
-        }
-        .processing-rings span:nth-child(2) { border-color: var(--blue); animation-delay: .4s; }
-        .processing-rings span:nth-child(3) { border-color: var(--green); animation-delay: .8s; }
-
-        @keyframes ping {
-            0% { transform: scale(.4); opacity: .9; }
-            100% { transform: scale(1); opacity: 0; }
-        }
-
-        .processing-overlay p {
-            margin: 0;
-            font-size: 13px;
-            color: var(--muted);
-            font-weight: 500;
-        }
-
         .dim-h {
             max-width: 413px;
             margin: 18px auto 0;
@@ -465,7 +420,7 @@
             right: 0;
             display: flex;
             justify-content: center;
-            pointer-events: none; /* Чтобы обертка не мешала кликам по странице */
+            pointer-events: none; 
             z-index: 1000;
         }
 
@@ -473,7 +428,7 @@
             width: 90%;
             max-width: 350px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-            pointer-events: auto; /* Кнопка кликабельна */
+            pointer-events: auto; 
             display: none;
         }
 
@@ -484,7 +439,7 @@
 
         @media (max-width: 700px) {
             body.camera-active {
-                padding-bottom: 140px; /* Чтобы кнопка не перекрывала футер */
+                padding-bottom: 140px; 
             }
             body { padding: 32px 12px 24px; }
             .frame-panel, .control-panel { padding-left: 16px; padding-right: 16px; }
@@ -523,11 +478,6 @@
                             <div class="guideline-line hair-zone"></div>
                         </div>
                     </div>
-
-                    <div class="processing-overlay" id="processingOverlay" hidden>
-                        <div class="processing-rings"><span></span><span></span><span></span></div>
-                        <p id="processingText">Убираем фон…</p>
-                    </div>
                 </div>
 
                 <div class="dim-h"><span class="dim-label">35 мм</span></div>
@@ -558,7 +508,7 @@
                     <span class="step-num">2</span>
                     <div class="step-body">
                         <h2>Сделайте снимок</h2>
-                        <p class="step-desc">Фон за лицом и телом будет автоматически заменён на белый.</p>
+                        <p class="step-desc">Фон будет белым, как в фотоателье.</p>
                     </div>
                 </div>
 
@@ -579,7 +529,7 @@
             </section>
         </div>
 
-        <footer class="tech-footer">35 × 45 мм — фон: белый (автозамена)</footer>
+        <footer class="tech-footer">35 × 45 мм — фон: белый</footer>
     </div>
 
     <!-- КНОПКА В ОТДЕЛЬНОЙ ОБЕРТКЕ ДЛЯ ЦЕНТРИРОВАНИЯ -->
@@ -587,7 +537,6 @@
         <button id="captureBtn" class="btn btn-primary" disabled>Сделать снимок</button>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/selfie_segmentation.js" crossorigin="anonymous"></script>
     <script>
         // Элементы DOM
         const body = document.body;
@@ -602,10 +551,8 @@
         const statusPill = document.getElementById('statusPill');
         const linkInput = document.getElementById('linkInput');
         const copyLinkBtn = document.getElementById('copyLinkBtn');
-        const processingOverlay = document.getElementById('processingOverlay');
-        const processingText = document.getElementById('processingText');
 
-        // Canvas для обработки
+        // Canvas для обработки (чистый белый фон)
         const canvas = document.createElement('canvas');
         canvas.width = 413;
         canvas.height = 531;
@@ -622,110 +569,7 @@
             statusText.textContent = text;
         }
 
-        function showProcessing(text) {
-            processingText.textContent = text;
-            processingOverlay.hidden = false;
-        }
-
-        function hideProcessing() {
-            processingOverlay.hidden = true;
-        }
-
-        // --- Удаление фона (улучшенная версия) ---
-        let selfieSegmentation = null;
-        let pendingResolve = null;
-
-        try {
-            if (typeof SelfieSegmentation !== 'undefined') {
-                selfieSegmentation = new SelfieSegmentation({
-                    locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`
-                });
-                selfieSegmentation.setOptions({ modelSelection: 1 }); // Используем точную модель
-                selfieSegmentation.onResults((results) => {
-                    if (pendingResolve) {
-                        const resolve = pendingResolve;
-                        pendingResolve = null;
-                        resolve(results);
-                    }
-                });
-            }
-        } catch (err) {
-            selfieSegmentation = null;
-        }
-
-        function segmentImage(source) {
-            return new Promise((resolve, reject) => {
-                if (!selfieSegmentation) {
-                    reject(new Error('Segmentation unavailable'));
-                    return;
-                }
-                pendingResolve = resolve;
-                selfieSegmentation.send({ image: source }).catch(reject);
-            });
-        }
-
-        function toProcessingSource(source) {
-            const srcW = source.videoWidth || source.naturalWidth || source.width;
-            const srcH = source.videoHeight || source.naturalHeight || source.height;
-            const maxSide = 800; // Уменьшаем для стабильности и чистоты краев
-            const scale = Math.min(1, maxSide / Math.max(srcW, srcH));
-            if (scale === 1) return source;
-
-            const small = document.createElement('canvas');
-            small.width = Math.round(srcW * scale);
-            small.height = Math.round(srcH * scale);
-            small.getContext('2d').drawImage(source, 0, 0, small.width, small.height);
-            return small;
-        }
-
-        // Улучшенное удаление фона с размытием краев
-        async function removeBackground(source) {
-            if (!selfieSegmentation) return null;
-
-            try {
-                const scaledSource = toProcessingSource(source);
-                const results = await segmentImage(scaledSource);
-
-                const w = results.image.width || scaledSource.width || scaledSource.videoWidth;
-                const h = results.image.height || scaledSource.height || scaledSource.videoHeight;
-
-                // Рисуем оригинал
-                const imageCanvas = document.createElement('canvas');
-                imageCanvas.width = w;
-                imageCanvas.height = h;
-                const imageCtx = imageCanvas.getContext('2d');
-                imageCtx.drawImage(results.image, 0, 0, w, h);
-
-                // Рисуем маску
-                const maskCanvas = document.createElement('canvas');
-                maskCanvas.width = w;
-                maskCanvas.height = h;
-                const maskCtx = maskCanvas.getContext('2d');
-                maskCtx.drawImage(results.segmentationMask, 0, 0, w, h);
-
-                // Применяем размытие к маске, чтобы края были мягкими
-                maskCtx.filter = 'blur(3px)';
-                maskCtx.drawImage(maskCanvas, 0, 0);
-                maskCtx.filter = 'none'; // Сброс фильтра
-
-                const imgData = imageCtx.getImageData(0, 0, w, h);
-                const maskData = maskCtx.getImageData(0, 0, w, h);
-                
-                for (let i = 0; i < imgData.data.length; i += 4) {
-                    // Увеличиваем контрастность маски (делаем края четче)
-                    let alpha = maskData.data[i];
-                    if (alpha > 200) alpha = 255;
-                    else if (alpha < 50) alpha = 0;
-                    imgData.data[i + 3] = alpha;
-                }
-                imageCtx.putImageData(imgData, 0, 0);
-                return imageCanvas;
-            } catch (err) {
-                console.warn('Не удалось автоматически убрать фон:', err);
-                return null;
-            }
-        }
-
+        // Функция обрезки (cover) — рисует источник на белом фоне рамки.
         function drawToCanvas(source) {
             ctx.fillStyle = 'white';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -754,6 +598,7 @@
             ctx.drawImage(source, drawX, drawY, drawWidth, drawHeight);
         }
 
+        // Обновить превью и ссылку
         function updatePhotoFromCanvas() {
             currentImageDataUrl = canvas.toDataURL('image/png');
             photoImg.src = currentImageDataUrl;
@@ -767,6 +612,7 @@
             captureBtn.disabled = true;
         }
 
+        // Остановить камеру
         function stopCamera() {
             if (cameraStream) {
                 cameraStream.getTracks().forEach(track => track.stop());
@@ -814,25 +660,17 @@
         });
 
         // Снимок
-        captureBtn.addEventListener('click', async () => {
+        captureBtn.addEventListener('click', () => {
             if (!isCameraOn || !cameraStream) return;
 
             captureBtn.disabled = true;
             startCameraBtn.disabled = true;
-            showProcessing('Убираем фон…');
 
-            const cutout = await removeBackground(video);
-            drawToCanvas(cutout || video);
+            drawToCanvas(video);
             updatePhotoFromCanvas();
             stopCamera();
-            hideProcessing();
 
-            setStatus(
-                cutout ? 'success' : 'error',
-                cutout
-                    ? 'Снимок готов — фон заменён на белый.'
-                    : 'Снимок готов. Автозамена фона недоступна — фон оставлен как на фото.'
-            );
+            setStatus('success', 'Снимок готов — фон белый.');
         });
 
         // --- Загрузка файла ---
@@ -847,19 +685,11 @@
             const reader = new FileReader();
             reader.onload = function(event) {
                 const img = new Image();
-                img.onload = async function() {
-                    showProcessing('Убираем фон…');
-                    const cutout = await removeBackground(img);
-                    drawToCanvas(cutout || img);
+                img.onload = function() {
+                    drawToCanvas(img);
                     updatePhotoFromCanvas();
-                    hideProcessing();
 
-                    setStatus(
-                        cutout ? 'success' : 'error',
-                        cutout
-                            ? 'Фото загружено — фон заменён на белый.'
-                            : 'Фото загружено. Автозамена фона недоступна — фон оставлен как на фото.'
-                    );
+                    setStatus('success', 'Фото загружено — фон белый.');
                 };
                 img.src = event.target.result;
             };
