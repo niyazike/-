@@ -39,6 +39,7 @@
             margin: 0;
             min-height: 100vh;
             padding: 48px 20px 32px;
+            padding-bottom: 120px; /* Отступ снизу, чтобы кнопка не перекрывала контент */
         }
 
         .grain {
@@ -458,6 +459,7 @@
 
         /* ====== МОБИЛЬНАЯ ПЛАВАЮЩАЯ КНОПКА ====== */
         @media (max-width: 700px) {
+            /* Кнопка теперь вынесена из контейнеров и лежит в конце body */
             #captureBtn {
                 position: fixed;
                 bottom: 20px;
@@ -467,7 +469,7 @@
                 width: 90%;
                 max-width: 350px;
                 box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-                display: none; /* Скрыта по умолчанию */
+                display: none;
             }
             
             /* Показываем кнопку только когда камера активна */
@@ -476,9 +478,9 @@
                 animation: rise .3s both;
             }
             
-            /* Отступ снизу для контента, чтобы не перекрывался кнопкой */
-            body.camera-active .control-panel {
-                padding-bottom: 120px;
+            /* Большой отступ снизу, чтобы контент (футер) не перекрывался */
+            body.camera-active {
+                padding-bottom: 140px;
             }
             
             /* Небольшие правки для мобильных */
@@ -555,9 +557,7 @@
                     <div class="step-body">
                         <h2>Сделайте снимок</h2>
                         <p class="step-desc">Фон за лицом и телом будет автоматически заменён на белый.</p>
-                        <div class="step-actions">
-                            <button id="captureBtn" class="btn btn-primary" disabled>Сделать снимок</button>
-                        </div>
+                        <!-- Кнопка убрана отсюда! Она теперь внизу экрана -->
                     </div>
                 </div>
 
@@ -580,6 +580,9 @@
 
         <footer class="tech-footer">35 × 45 мм — фон: белый (автозамена)</footer>
     </div>
+
+    <!-- Кнопка вынесена сюда, чтобы position: fixed работал корректно -->
+    <button id="captureBtn" class="btn btn-primary" disabled>Сделать снимок</button>
 
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/selfie_segmentation.js" crossorigin="anonymous"></script>
     <script>
