@@ -9,589 +9,171 @@
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,500..600&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --ink: #18160f;
-            --ink-2: #241f15;
-            --paper: #faf6ee;
-            --paper-dim: #f1ead9;
-            --line: #e3dcc8;
-            --text: #231f16;
-            --muted: #7c7361;
-            --on-dark: #f4efe1;
-            --on-dark-muted: #b4a992;
-            --accent: #b03a2e;
-            --accent-light: #e2836f;
-            --blue: #3a6ea5;
-            --green: #3f7d57;
-            --gold: #b9862e;
+            --ink: #18160f; --ink-2: #241f15; --paper: #faf6ee; --line: #e3dcc8;
+            --text: #231f16; --muted: #7c7361; --on-dark: #f4efe1; --accent: #b03a2e;
+            --accent-light: #e2836f; --blue: #3a6ea5; --green: #3f7d57; --gold: #b9862e;
         }
-
         * { box-sizing: border-box; }
-
-        html, body {
-            max-width: 100%;
-            overflow-x: hidden;
-        }
-
-        body {
-            font-family: 'Archivo', sans-serif;
-            background: radial-gradient(circle at 18% -10%, var(--ink-2), var(--ink) 62%);
-            color: var(--on-dark);
-            margin: 0;
-            min-height: 100vh;
-            padding: 48px 20px 32px;
-        }
-
-        .grain {
-            position: fixed;
-            inset: 0;
-            z-index: 999;
-            pointer-events: none;
-            opacity: .05;
-            mix-blend-mode: overlay;
-            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after { animation: none !important; transition: none !important; }
-        }
-
-        @keyframes rise {
-            from { opacity: 0; transform: translateY(14px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .page {
-            max-width: 980px;
-            margin: 0 auto;
-            position: relative;
-        }
-
-        .masthead {
-            position: relative;
-            margin-bottom: 26px;
-        }
-
-        .eyebrow {
-            font-size: 12px;
-            font-weight: 600;
-            letter-spacing: .14em;
-            text-transform: uppercase;
-            color: var(--accent-light);
-            margin: 0 0 10px;
-            animation: rise .6s both;
-        }
-
-        .masthead h1 {
-            font-family: 'Fraunces', serif;
-            font-style: italic;
-            font-weight: 600;
-            font-size: clamp(2.3rem, 5vw, 3.5rem);
-            line-height: 1.05;
-            margin: 0 0 12px;
-            color: var(--on-dark);
-            animation: rise .6s .08s both;
-        }
-
-        .masthead h1 .dot { color: var(--accent-light); }
-
-        .lede {
-            max-width: 480px;
-            font-size: 15px;
-            line-height: 1.6;
-            color: var(--on-dark-muted);
-            margin: 0;
-            animation: rise .6s .16s both;
-        }
-
-        .stamp-tag {
-            position: absolute;
-            top: 4px;
-            right: 6px;
-            font-family: 'Fraunces', serif;
-            font-weight: 600;
-            font-size: 13px;
-            letter-spacing: .04em;
-            color: var(--accent-light);
-            border: 1.5px dashed var(--accent-light);
-            border-radius: 999px;
-            padding: 8px 16px;
-            transform: rotate(7deg);
-            opacity: .85;
-            animation: rise .6s .2s both;
-        }
-
-        @media (max-width: 700px) {
-            .stamp-tag { display: none; }
-        }
-
-        .status-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            background: rgba(255,255,255,.06);
-            border: 1px solid rgba(255,255,255,.14);
-            border-radius: 999px;
-            padding: 9px 16px;
-            font-size: 13px;
-            color: var(--on-dark-muted);
-            margin-bottom: 28px;
-            animation: rise .6s .22s both;
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--on-dark-muted);
-            flex: 0 0 auto;
-        }
-
-        .status-pill.active .status-dot { background: var(--blue); box-shadow: 0 0 0 3px rgba(58,110,165,.25); }
-        .status-pill.success .status-dot { background: var(--green); box-shadow: 0 0 0 3px rgba(63,125,87,.25); }
-        .status-pill.error .status-dot { background: var(--accent); box-shadow: 0 0 0 3px rgba(176,58,46,.25); }
-
-        .studio {
-            display: grid;
-            grid-template-columns: minmax(300px, 380px) 1fr;
-            gap: 32px;
-            align-items: start;
-        }
-
-        @media (max-width: 860px) {
-            .studio { grid-template-columns: 1fr; }
-        }
-
-        .frame-panel, .control-panel {
-            background: var(--paper);
-            border: 1px solid var(--line);
-            border-radius: 20px;
-            box-shadow: 0 30px 60px -30px rgba(0,0,0,.55);
-            color: var(--text);
-        }
-
-        .frame-panel {
-            padding: 26px 22px 24px;
-            animation: rise .6s .3s both;
-        }
-
-        .control-panel {
-            padding: 8px 26px 22px;
-            animation: rise .6s .38s both;
-        }
-
-        .frame-wrap {
-            position: relative;
-            max-width: 413px;
-            margin: 0 auto;
-            padding: 16px;
-        }
-
-        .corner {
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            border-color: var(--accent);
-            opacity: .8;
-        }
-        .corner.tl { top: 0; left: 0; border-top: 2px solid; border-left: 2px solid; }
-        .corner.tr { top: 0; right: 0; border-top: 2px solid; border-right: 2px solid; }
-        .corner.bl { bottom: 0; left: 0; border-bottom: 2px solid; border-left: 2px solid; }
-        .corner.br { bottom: 0; right: 0; border-bottom: 2px solid; border-right: 2px solid; }
-
-        .frame {
-            width: 100%;
-            aspect-ratio: 35 / 45;
-            background: #ffffff;
-            border: 1px solid var(--line);
-            border-radius: 6px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .frame img,
-        .frame video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: none;
-        }
-
+        body { font-family: 'Archivo', sans-serif; background: radial-gradient(circle at 18% -10%, var(--ink-2), var(--ink) 62%); color: var(--on-dark); margin: 0; min-height: 100vh; padding: 40px 20px 120px; }
+        .page { max-width: 980px; margin: 0 auto; }
+        .masthead h1 { font-family: 'Fraunces', serif; font-style: italic; font-size: clamp(2.3rem, 5vw, 3.5rem); margin: 0; }
+        .masthead p { color: var(--on-dark-muted); max-width: 500px; line-height: 1.5; }
+        .status-pill { display: inline-flex; align-items: center; gap: 10px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); border-radius: 999px; padding: 8px 16px; font-size: 13px; margin: 20px 0; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #aaa; }
+        .status-pill.active .status-dot { background: var(--blue); }
+        .status-pill.success .status-dot { background: var(--green); }
+        
+        .studio { display: grid; grid-template-columns: minmax(300px, 380px) 1fr; gap: 30px; align-items: start; }
+        @media (max-width: 860px) { .studio { grid-template-columns: 1fr; } }
+        
+        .frame-panel, .control-panel { background: var(--paper); border: 1px solid var(--line); border-radius: 20px; padding: 24px; color: var(--text); box-shadow: 0 30px 60px -30px rgba(0,0,0,.55); }
+        
+        .frame { width: 100%; aspect-ratio: 35/45; background: #fff; border: 1px solid var(--line); position: relative; overflow: hidden; border-radius: 6px; }
+        .frame img, .frame video { width: 100%; height: 100%; object-fit: cover; display: none; }
         .frame video { transform: scaleX(-1); }
-
-        /* УЛУЧШЕННАЯ СЕТКА (НАПРАВЛЯЮЩИЕ) */
-        .guidelines {
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            z-index: 10;
-        }
-
-        .guideline-line { position: absolute; }
-
-        .center-x {
-            left: 50%; top: 0; height: 100%;
-            border-left: 2px dashed rgba(176, 58, 46, .65); /* Более яркая */
-        }
-        .eyes-y {
-            top: 45%; left: 0; width: 100%;
-            border-top: 2px dashed rgba(58, 110, 165, .7);
-        }
-        .chin-y {
-            top: 85%; left: 0; width: 100%;
-            border-top: 2px dashed rgba(63, 125, 87, .7);
-        }
-        .hair-zone {
-            top: 0; left: 0; width: 100%; height: 10%;
-            border-bottom: 2px dashed rgba(185, 134, 46, .65);
-            background: rgba(185, 134, 46, .07);
-        }
-        /* Овал для лица */
-        .face-oval {
-            position: absolute;
-            top: 22%;
-            left: 15%;
-            width: 70%;
-            height: 55%;
-            border: 2px dashed rgba(176, 58, 46, .5);
-            border-radius: 50%;
-            box-shadow: inset 0 0 0 9999px rgba(176, 58, 46, .04); /* Лёгкая заливка внутри овала */
-        }
-
-        .dim-h {
-            max-width: 413px;
-            margin: 18px auto 0;
-            position: relative;
-            height: 1px;
-            background: var(--line);
-        }
-        .dim-h::before, .dim-h::after {
-            content: '';
-            position: absolute;
-            top: -4px;
-            width: 1px;
-            height: 9px;
-            background: var(--line);
-        }
-        .dim-h::before { left: 0; }
-        .dim-h::after { right: 0; }
-        .dim-label {
-            position: absolute;
-            top: -8px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--paper);
-            padding: 0 8px;
-            font-size: 11px;
-            letter-spacing: .08em;
-            color: var(--muted);
-            white-space: nowrap;
-        }
-
-        .legend {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 14px;
-            margin-top: 22px;
-        }
-        .legend-item {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 12px;
-            color: var(--muted);
-        }
-        .legend-item i {
-            width: 9px;
-            height: 9px;
-            border-radius: 2px;
-            display: inline-block;
-        }
-        .legend-oval i { border-radius: 50%; border: 2px solid var(--accent); width: 11px; height: 11px; background: transparent; }
-
-        .step {
-            display: flex;
-            gap: 16px;
-            padding: 20px 0;
-            border-top: 1px solid var(--line);
-        }
-        .step:first-child { border-top: none; }
-
-        .step-num {
-            flex: 0 0 auto;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background: var(--paper-dim);
-            border: 1px solid var(--line);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Fraunces', serif;
-            font-weight: 600;
-            font-size: 14px;
-            color: var(--accent);
-            margin-top: 2px;
-        }
-
-        .step-body { flex: 1 1 auto; min-width: 0; }
-
-        .step-body h2 {
-            font-size: 13px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: .06em;
-            margin: 4px 0 6px;
-            color: var(--text);
-        }
-
-        .step-desc {
-            font-size: 13px;
-            line-height: 1.5;
-            color: var(--muted);
-            margin: 0 0 14px;
-        }
-
-        .step-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .visually-hidden { display: none; }
-
-        .btn {
-            font-family: 'Archivo', sans-serif;
-            font-weight: 600;
-            font-size: 14px;
-            border: none;
-            border-radius: 10px;
-            padding: 11px 18px;
-            cursor: pointer;
-            transition: transform .15s ease, box-shadow .15s ease, background .2s ease;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .btn-primary {
-            background: var(--accent);
-            color: var(--paper);
-            box-shadow: 0 8px 18px -8px rgba(176,58,46,.55);
-        }
-        .btn-primary:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 10px 20px -8px rgba(176,58,46,.6); background: var(--accent-light); }
-        .btn-primary:active:not(:disabled) { transform: translateY(0) scale(.98); }
-
-        .btn-secondary {
-            background: transparent;
-            color: var(--text);
-            border: 1.5px solid var(--line);
-        }
-        .btn-secondary:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
-
-        .btn:disabled { opacity: .4; cursor: not-allowed; transform: none; box-shadow: none; }
-
-        @media (max-width: 480px) {
-            .btn { flex: 1 1 auto; }
-        }
-
-        .link-row {
-            display: flex;
-            gap: 8px;
-            margin-top: 4px;
-        }
-
-        .link-input {
-            flex: 1 1 auto;
-            min-width: 0;
-            padding: 10px 12px;
-            border: 1px solid var(--line);
-            border-radius: 8px;
-            font-family: 'DejaVu Sans Mono', 'Courier New', monospace;
-            font-size: 11px;
-            color: var(--muted);
-            background: var(--paper-dim);
-        }
-
-        .tech-footer {
-            margin-top: 30px;
-            padding-top: 18px;
-            border-top: 1px solid rgba(255,255,255,.12);
-            text-align: center;
-            font-family: 'DejaVu Sans Mono', 'Courier New', monospace;
-            font-size: 11px;
-            letter-spacing: .12em;
-            color: var(--on-dark-muted);
-            animation: rise .6s .46s both;
-        }
-
-        /* ====== ФИКСИРОВАННАЯ КНОПКА ====== */
-        .capture-wrap {
-            position: fixed;
-            bottom: 20px;
-            left: 0;
-            right: 0;
-            display: flex;
-            justify-content: center;
-            pointer-events: none; 
-            z-index: 1000;
-        }
-
-        #captureBtn {
-            width: 90%;
-            max-width: 350px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-            pointer-events: auto; 
-            display: none;
-        }
-
-        body.camera-active #captureBtn {
-            display: inline-flex;
-            animation: rise .3s both;
-        }
-
-        @media (max-width: 700px) {
-            body.camera-active {
-                padding-bottom: 140px; 
-            }
-            body { padding: 32px 12px 24px; }
-            .frame-panel, .control-panel { padding-left: 16px; padding-right: 16px; }
-            .frame-wrap { padding: 12px; }
-        }
+        
+        .guidelines { position: absolute; inset: 0; pointer-events: none; z-index: 10; }
+        .center-x { position: absolute; left: 50%; top: 0; height: 100%; border-left: 2px dashed rgba(176,58,46,.6); }
+        .eyes-y { position: absolute; top: 45%; left: 0; width: 100%; border-top: 2px dashed rgba(58,110,165,.6); }
+        .chin-y { position: absolute; top: 85%; left: 0; width: 100%; border-top: 2px dashed rgba(63,125,87,.6); }
+        .hair-zone { position: absolute; top: 0; left: 0; width: 100%; height: 10%; border-bottom: 2px dashed rgba(185,134,46,.6); }
+        
+        /* Овал можно двигать мышкой или пальцем */
+        #faceOval { position: absolute; top: 22%; left: 15%; width: 70%; height: 55%; border: 2px dashed rgba(176,58,46,.65); border-radius: 50%; cursor: move; touch-action: none; z-index: 20; }
+        
+        .controls { border-top: 1px solid var(--line); padding-top: 15px; margin-top: 15px; }
+        .step-title { font-size: 13px; font-weight: 700; text-transform: uppercase; }
+        .btn { border: none; border-radius: 10px; padding: 12px 18px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .btn-primary { background: var(--accent); color: var(--paper); }
+        .btn-secondary { background: transparent; border: 1.5px solid var(--line); color: var(--text); }
+        
+        .link-actions { display: flex; gap: 10px; margin-top: 10px; }
+        .link-actions button { flex: 1; }
+        .hidden { display: none !important; }
+        
+        .capture-wrap { position: fixed; bottom: 20px; left: 0; right: 0; display: flex; justify-content: center; pointer-events: none; z-index: 1000; }
+        #captureBtn { width: 90%; max-width: 350px; box-shadow: 0 8px 20px rgba(0,0,0,.4); pointer-events: auto; display: none; }
+        body.camera-active #captureBtn { display: inline-flex; }
+        @media (max-width: 700px) { body { padding: 20px 12px 140px; } }
     </style>
 </head>
 <body>
-    <div class="grain" aria-hidden="true"></div>
-
     <div class="page">
-        <header class="masthead">
-            <p class="eyebrow">Биометрическое фото · Онлайн-студия</p>
-            <h1>Фото на паспорт<span class="dot">.</span></h1>
-            <p class="lede">Сделайте снимок или загрузите портрет — рамка покажет правильное расположение лица для паспорта.</p>
-            <span class="stamp-tag">35 × 45</span>
-        </header>
-
-        <div class="status-pill idle" id="statusPill">
-            <span class="status-dot" id="statusDot"></span>
-            <span id="status">Выберите способ получения фото</span>
+        <div class="masthead">
+            <h1>Фото на паспорт<span style="color:var(--accent-light)">.</span></h1>
+            <p>Смотрите на экран как в зеркало, поставьте лицо в овал и нажмите кнопку.</p>
         </div>
-
+        
+        <div class="status-pill" id="statusPill">
+            <span class="status-dot"></span>
+            <span id="status">Готов к работе</span>
+        </div>
+        
         <div class="studio">
             <section class="frame-panel">
-                <div class="frame-wrap">
-                    <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
-                    <div class="frame" id="frame">
-                        <img id="photo" alt="Ваше фото">
-                        <video id="camera" autoplay playsinline></video>
-
-                        <div class="guidelines">
-                            <div class="guideline-line center-x"></div>
-                            <div class="guideline-line eyes-y"></div>
-                            <div class="guideline-line chin-y"></div>
-                            <div class="guideline-line hair-zone"></div>
-                            <div class="face-oval"></div>
-                        </div>
+                <div class="frame" id="frame">
+                    <img id="photo" alt="Фото">
+                    <video id="camera" autoplay playsinline></video>
+                    <div class="guidelines">
+                        <div class="center-x"></div>
+                        <div class="eyes-y"></div>
+                        <div class="chin-y"></div>
+                        <div class="hair-zone"></div>
                     </div>
+                    <div id="faceOval"></div>
                 </div>
-
-                <div class="dim-h"><span class="dim-label">35 мм</span></div>
-
-                <div class="legend">
-                    <span class="legend-item"><i style="background: var(--accent)"></i>Центр</span>
-                    <span class="legend-item"><i style="background: var(--blue)"></i>Уровень глаз</span>
-                    <span class="legend-item"><i style="background: var(--green)"></i>Подбородок</span>
-                    <span class="legend-item"><i style="background: var(--gold)"></i>Зона волос</span>
-                    <span class="legend-item legend-oval"><i></i>Овал лица</span>
-                </div>
+                <div style="text-align:center; margin-top:15px; font-size:12px; color:var(--muted);">35 × 45 мм</div>
             </section>
-
+            
             <section class="control-panel">
-                <div class="step">
-                    <span class="step-num">1</span>
-                    <div class="step-body">
-                        <h2>Получите фото</h2>
-                        <p class="step-desc">Включите камеру и совместите лицо с овалом и линиями — либо загрузите готовый снимок с устройства.</p>
-                        <div class="step-actions">
-                            <button id="startCameraBtn" class="btn btn-primary">Включить камеру</button>
-                            <label for="fileInput" class="btn btn-secondary">Загрузить фото</label>
-                            <input type="file" id="fileInput" accept="image/*" class="visually-hidden">
-                        </div>
-                    </div>
+                <div class="controls">
+                    <div class="step-title">1. Получите фото</div>
+                    <button id="startCameraBtn" class="btn btn-primary" style="margin:10px 0;">Включить камеру</button>
+                    <label for="fileInput" class="btn btn-secondary" style="display:inline-block;">Загрузить файл</label>
+                    <input type="file" id="fileInput" accept="image/*" style="display:none;">
                 </div>
-
-                <div class="step">
-                    <span class="step-num">2</span>
-                    <div class="step-body">
-                        <h2>Сделайте снимок</h2>
-                        <p class="step-desc">Фон автоматически будет белым.</p>
-                    </div>
+                <div class="controls">
+                    <div class="step-title">2. Сделайте снимок</div>
+                    <p style="font-size:13px; color:var(--muted);">Нажмите кнопку внизу экрана.</p>
                 </div>
-
-                <div class="step">
-                    <span class="step-num">3</span>
-                    <div class="step-body">
-                        <h2>Сохраните результат</h2>
-                        <p class="step-desc">Скачайте файл или скопируйте ссылку на изображение.</p>
-                        <div class="step-actions">
-                            <button id="downloadBtn" class="btn btn-primary" disabled>Скачать фото</button>
-                        </div>
-                        <div class="link-row">
-                            <input type="text" id="linkInput" class="link-input" readonly placeholder="Ссылка появится здесь">
-                            <button id="copyLinkBtn" class="btn btn-secondary" disabled>Копировать</button>
-                        </div>
+                <div class="controls" id="resultControls" style="display: none;">
+                    <div class="step-title">3. Сохраните результат</div>
+                    <div class="link-actions">
+                        <button id="downloadBtn" class="btn btn-primary">Скачать фото</button>
+                    </div>
+                    <div class="link-actions">
+                        <button id="copyLinkBtn" class="btn btn-secondary">Скопировать ссылку</button>
+                        <button id="resetBtn" class="btn btn-secondary" style="background: var(--paper-dim);">Новое фото</button>
                     </div>
                 </div>
             </section>
         </div>
-
-        <footer class="tech-footer">35 × 45 мм — фон: белый</footer>
     </div>
-
-    <!-- КНОПКА В ОТДЕЛЬНОЙ ОБЕРТКЕ -->
+    
     <div class="capture-wrap">
         <button id="captureBtn" class="btn btn-primary" disabled>Сделать снимок</button>
     </div>
 
     <script>
-        // Элементы DOM
-        const body = document.body;
         const frame = document.getElementById('frame');
         const photoImg = document.getElementById('photo');
         const video = document.getElementById('camera');
-        const startCameraBtn = document.getElementById('startCameraBtn');
+        const statusText = document.getElementById('status');
+        const statusPill = document.getElementById('statusPill');
+        const startBtn = document.getElementById('startCameraBtn');
         const captureBtn = document.getElementById('captureBtn');
         const fileInput = document.getElementById('fileInput');
         const downloadBtn = document.getElementById('downloadBtn');
-        const statusText = document.getElementById('status');
-        const statusPill = document.getElementById('statusPill');
-        const linkInput = document.getElementById('linkInput');
-        const copyLinkBtn = document.getElementById('copyLinkBtn');
+        const copyBtn = document.getElementById('copyLinkBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const resultControls = document.getElementById('resultControls');
+        const faceOval = document.getElementById('faceOval');
+        const body = document.body;
 
-        // Canvas для обработки (чистый белый фон)
+        let cameraStream = null;
+        let isCameraOn = false;
+        let currentImageDataUrl = null;
+
         const canvas = document.createElement('canvas');
         canvas.width = 413;
         canvas.height = 531;
         const ctx = canvas.getContext('2d');
 
-        let cameraStream = null;
-        let isCameraOn = false;
-        let currentImageDataUrl = null;
-        let compressedLinkDataUrl = null;
+        // --- Логика перетаскивания овала (работает и мышкой, и пальцем) ---
+        let isDragging = false;
+        let startX, startY;
 
-        function setStatus(kind, text) {
-            statusPill.classList.remove('idle', 'active', 'success', 'error');
-            statusPill.classList.add(kind);
-            statusText.textContent = text;
+        faceOval.addEventListener('touchstart', startDrag, {passive: false});
+        faceOval.addEventListener('mousedown', startDrag);
+        document.addEventListener('touchmove', drag, {passive: false});
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('touchend', endDrag);
+        document.addEventListener('mouseup', endDrag);
+
+        function startDrag(e) {
+            isDragging = true;
+            startX = e.clientX - faceOval.offsetLeft;
+            startY = e.clientY - faceOval.offsetTop;
+            e.preventDefault();
         }
+        function drag(e) {
+            if (!isDragging) return;
+            let x = e.clientX - startX;
+            let y = e.clientY - startY;
+            x = Math.max(0, Math.min(frame.clientWidth - faceOval.clientWidth, x));
+            y = Math.max(0, Math.min(frame.clientHeight - faceOval.clientHeight, y));
+            faceOval.style.left = x + 'px';
+            faceOval.style.top = y + 'px';
+        }
+        function endDrag() { isDragging = false; }
 
-        // Функция обрезки (cover) — рисует источник на белом фоне рамки.
+        // --- Функция рисования (просто по центру, без смещений) ---
         function drawToCanvas(source) {
             ctx.fillStyle = 'white';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             const srcW = source.videoWidth || source.naturalWidth || source.width;
             const srcH = source.videoHeight || source.naturalHeight || source.height;
-
             if (!srcW || !srcH) return;
 
             const srcRatio = srcW / srcH;
@@ -599,112 +181,88 @@
 
             let drawWidth, drawHeight, drawX, drawY;
             if (srcRatio > frameRatio) {
+                // Источник шире — обрезаем бока
                 drawHeight = canvas.height;
                 drawWidth = drawHeight * srcRatio;
                 drawX = (canvas.width - drawWidth) / 2;
                 drawY = 0;
             } else {
+                // Источник выше — обрезаем верх/низ
                 drawWidth = canvas.width;
                 drawHeight = drawWidth / srcRatio;
                 drawX = 0;
                 drawY = (canvas.height - drawHeight) / 2;
             }
-
             ctx.drawImage(source, drawX, drawY, drawWidth, drawHeight);
         }
 
-        // Обновить превью и ссылку
-        function updatePhotoFromCanvas() {
+        function updatePhoto() {
             currentImageDataUrl = canvas.toDataURL('image/png');
             photoImg.src = currentImageDataUrl;
             photoImg.style.display = 'block';
             video.style.display = 'none';
-
-            compressedLinkDataUrl = canvas.toDataURL('image/jpeg', 0.7);
-            linkInput.value = compressedLinkDataUrl;
-            copyLinkBtn.disabled = false;
+            
+            resultControls.style.display = 'block';
             downloadBtn.disabled = false;
-            captureBtn.disabled = true;
+            copyBtn.disabled = false;
+            setStatus('success', 'Фото готово!');
         }
 
-        // Остановить камеру
-        function stopCamera() {
-            if (cameraStream) {
-                cameraStream.getTracks().forEach(track => track.stop());
-                cameraStream = null;
-            }
-            isCameraOn = false;
-            video.style.display = 'none';
-            startCameraBtn.textContent = 'Включить камеру';
-            startCameraBtn.disabled = false;
-            captureBtn.disabled = true;
-            body.classList.remove('camera-active');
+        function setStatus(type, text) {
+            statusPill.className = 'status-pill ' + type;
+            statusText.textContent = text;
         }
 
         // --- Камера ---
-        startCameraBtn.addEventListener('click', async () => {
-            if (isCameraOn) {
-                stopCamera();
-                setStatus('idle', 'Камера выключена');
-                return;
-            }
-
-            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                alert('Ваш браузер не поддерживает доступ к камере.');
-                return;
-            }
-
+        startBtn.addEventListener('click', async () => {
+            if (isCameraOn) { stopCamera(); return; }
+            resultControls.style.display = 'none';
             try {
-                cameraStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                cameraStream = await navigator.mediaDevices.getUserMedia({ video: true });
                 video.srcObject = cameraStream;
                 await video.play();
-
                 video.style.display = 'block';
                 photoImg.style.display = 'none';
                 isCameraOn = true;
-                startCameraBtn.textContent = 'Выключить камеру';
                 captureBtn.disabled = false;
                 body.classList.add('camera-active');
-                setStatus('active', 'Камера активна. Совместите лицо с овалом и линиями.');
-                downloadBtn.disabled = true;
-                copyLinkBtn.disabled = true;
-                linkInput.value = '';
-            } catch (err) {
-                alert('Не удалось получить доступ к камере: ' + err.message);
+                startBtn.textContent = 'Выключить камеру';
+                setStatus('active', 'Совместите лицо с овалом и линиями');
+            } catch (e) {
+                alert('Не удалось получить доступ к камере: ' + e.message);
             }
         });
 
-        // Снимок
-        captureBtn.addEventListener('click', () => {
-            if (!isCameraOn || !cameraStream) return;
-
+        function stopCamera() {
+            if (cameraStream) cameraStream.getTracks().forEach(t => t.stop());
+            cameraStream = null;
+            isCameraOn = false;
+            video.style.display = 'none';
             captureBtn.disabled = true;
-            startCameraBtn.disabled = true;
+            body.classList.remove('camera-active');
+            startBtn.textContent = 'Включить камеру';
+        }
 
+        captureBtn.addEventListener('click', () => {
+            if (!isCameraOn) return;
+            captureBtn.disabled = true;
             drawToCanvas(video);
-            updatePhotoFromCanvas();
+            updatePhoto();
             stopCamera();
-
-            setStatus('success', 'Снимок готов — фон белый.');
         });
 
         // --- Загрузка файла ---
-        fileInput.addEventListener('change', function(e) {
+        fileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (!file) return;
-
-            if (isCameraOn) {
-                stopCamera();
-            }
-
+            if (isCameraOn) stopCamera();
+            resultControls.style.display = 'none';
             const reader = new FileReader();
-            reader.onload = function(event) {
+            reader.onload = (event) => {
                 const img = new Image();
-                img.onload = function() {
+                img.onload = () => {
                     drawToCanvas(img);
-                    updatePhotoFromCanvas();
-
-                    setStatus('success', 'Фото загружено — фон белый.');
+                    updatePhoto();
                 };
                 img.src = event.target.result;
             };
@@ -712,36 +270,32 @@
             fileInput.value = '';
         });
 
-        // --- Копирование ссылки ---
-        copyLinkBtn.addEventListener('click', async () => {
-            if (!compressedLinkDataUrl) return;
-
-            try {
-                await navigator.clipboard.writeText(compressedLinkDataUrl);
-                setStatus('success', 'Ссылка скопирована в буфер обмена!');
-            } catch (err) {
-                linkInput.select();
-                document.execCommand('copy');
-                setStatus('success', 'Ссылка скопирована (нажмите Ctrl+C, если не сработало).');
-            }
-        });
-
         // --- Скачивание ---
         downloadBtn.addEventListener('click', () => {
             if (!currentImageDataUrl) return;
+            const link = document.createElement('a');
+            link.download = 'passport_photo.png';
+            link.href = currentImageDataUrl;
+            link.click();
+        });
 
-            canvas.toBlob(function(blob) {
-                if (!blob) return;
+        // --- Копирование ссылки ---
+        copyBtn.addEventListener('click', async () => {
+            if (!currentImageDataUrl) return;
+            try { 
+                await navigator.clipboard.writeText(currentImageDataUrl); 
+                setStatus('success', 'Ссылка скопирована!'); 
+            } catch(e) { 
+                alert('Не удалось скопировать ссылку автоматически'); 
+            }
+        });
 
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.download = 'passport_photo.png';
-                link.href = url;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                URL.revokeObjectURL(url);
-            }, 'image/png');
+        // --- Сброс и новое фото ---
+        resetBtn.addEventListener('click', () => {
+            resultControls.style.display = 'none';
+            currentImageDataUrl = null;
+            photoImg.style.display = 'none';
+            setStatus('idle', 'Готов к работе');
         });
     </script>
 </body>
