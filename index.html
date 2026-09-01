@@ -39,7 +39,7 @@
             margin: 0;
             min-height: 100vh;
             padding: 48px 20px 32px;
-            padding-bottom: 120px; /* Отступ снизу, чтобы кнопка не перекрывала контент */
+            padding-bottom: 120px; /* Отступ снизу для контента */
         }
 
         .grain {
@@ -457,33 +457,35 @@
             animation: rise .6s .46s both;
         }
 
-        /* ====== МОБИЛЬНАЯ ПЛАВАЮЩАЯ КНОПКА ====== */
+        /* ====== ФИКСИРОВАННАЯ КНОПКА (ИСПРАВЛЕНО) ====== */
+        .capture-wrap {
+            position: fixed;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            pointer-events: none; /* Чтобы обертка не мешала кликам по странице */
+            z-index: 1000;
+        }
+
+        #captureBtn {
+            width: 90%;
+            max-width: 350px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            pointer-events: auto; /* Кнопка кликабельна */
+            display: none;
+        }
+
+        body.camera-active #captureBtn {
+            display: inline-flex;
+            animation: rise .3s both;
+        }
+
         @media (max-width: 700px) {
-            /* Кнопка теперь вынесена из контейнеров и лежит в конце body */
-            #captureBtn {
-                position: fixed;
-                bottom: 20px;
-                left: 50%;
-                transform: translateX(-50%);
-                z-index: 1000;
-                width: 90%;
-                max-width: 350px;
-                box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-                display: none;
-            }
-            
-            /* Показываем кнопку только когда камера активна */
-            body.camera-active #captureBtn {
-                display: flex;
-                animation: rise .3s both;
-            }
-            
-            /* Большой отступ снизу, чтобы контент (футер) не перекрывался */
             body.camera-active {
-                padding-bottom: 140px;
+                padding-bottom: 140px; /* Чтобы кнопка не перекрывала футер */
             }
-            
-            /* Небольшие правки для мобильных */
             body { padding: 32px 12px 24px; }
             .frame-panel, .control-panel { padding-left: 16px; padding-right: 16px; }
             .frame-wrap { padding: 12px; }
@@ -557,7 +559,6 @@
                     <div class="step-body">
                         <h2>Сделайте снимок</h2>
                         <p class="step-desc">Фон за лицом и телом будет автоматически заменён на белый.</p>
-                        <!-- Кнопка убрана отсюда! Она теперь внизу экрана -->
                     </div>
                 </div>
 
@@ -581,8 +582,10 @@
         <footer class="tech-footer">35 × 45 мм — фон: белый (автозамена)</footer>
     </div>
 
-    <!-- Кнопка вынесена сюда, чтобы position: fixed работал корректно -->
-    <button id="captureBtn" class="btn btn-primary" disabled>Сделать снимок</button>
+    <!-- КНОПКА В ОТДЕЛЬНОЙ ОБЕРТКЕ ДЛЯ ЦЕНТРИРОВАНИЯ -->
+    <div class="capture-wrap">
+        <button id="captureBtn" class="btn btn-primary" disabled>Сделать снимок</button>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/selfie_segmentation.js" crossorigin="anonymous"></script>
     <script>
@@ -628,7 +631,7 @@
             processingOverlay.hidden = true;
         }
 
-        // --- Удаление фона (замена на белый, как на фото в паспорт) ---
+        // --- Удаление фона (улучшенная версия) ---
         let selfieSegmentation = null;
         let pendingResolve = null;
 
@@ -637,7 +640,7 @@
                 selfieSegmentation = new SelfieSegmentation({
                     locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`
                 });
-                selfieSegmentation.setOptions({ modelSelection: 1 });
+                selfieSegmentation.setOptions({ modelSelection: 1 }); // Используем точную модель
                 selfieSegmentation.onResults((results) => {
                     if (pendingResolve) {
                         const resolve = pendingResolve;
@@ -661,11 +664,10 @@
             });
         }
 
-        // Уменьшаем исходник перед сегментацией — быстрее и стабильнее на телефонах
         function toProcessingSource(source) {
             const srcW = source.videoWidth || source.naturalWidth || source.width;
             const srcH = source.videoHeight || source.naturalHeight || source.height;
-            const maxSide = 1000;
+            const maxSide = 800; // Уменьшаем для стабильности и чистоты краев
             const scale = Math.min(1, maxSide / Math.max(srcW, srcH));
             if (scale === 1) return source;
 
@@ -676,7 +678,7 @@
             return small;
         }
 
-        // Возвращает canvas с вырезанным силуэтом (прозрачный фон) или null при ошибке
+        // Улучшенное удаление фона с размытием краев
         async function removeBackground(source) {
             if (!selfieSegmentation) return null;
 
@@ -687,22 +689,34 @@
                 const w = results.image.width || scaledSource.width || scaledSource.videoWidth;
                 const h = results.image.height || scaledSource.height || scaledSource.videoHeight;
 
+                // Рисуем оригинал
                 const imageCanvas = document.createElement('canvas');
                 imageCanvas.width = w;
                 imageCanvas.height = h;
                 const imageCtx = imageCanvas.getContext('2d');
                 imageCtx.drawImage(results.image, 0, 0, w, h);
 
+                // Рисуем маску
                 const maskCanvas = document.createElement('canvas');
                 maskCanvas.width = w;
                 maskCanvas.height = h;
                 const maskCtx = maskCanvas.getContext('2d');
                 maskCtx.drawImage(results.segmentationMask, 0, 0, w, h);
 
+                // Применяем размытие к маске, чтобы края были мягкими
+                maskCtx.filter = 'blur(3px)';
+                maskCtx.drawImage(maskCanvas, 0, 0);
+                maskCtx.filter = 'none'; // Сброс фильтра
+
                 const imgData = imageCtx.getImageData(0, 0, w, h);
                 const maskData = maskCtx.getImageData(0, 0, w, h);
+                
                 for (let i = 0; i < imgData.data.length; i += 4) {
-                    imgData.data[i + 3] = maskData.data[i];
+                    // Увеличиваем контрастность маски (делаем края четче)
+                    let alpha = maskData.data[i];
+                    if (alpha > 200) alpha = 255;
+                    else if (alpha < 50) alpha = 0;
+                    imgData.data[i + 3] = alpha;
                 }
                 imageCtx.putImageData(imgData, 0, 0);
                 return imageCanvas;
@@ -712,7 +726,6 @@
             }
         }
 
-        // Функция обрезки (cover) — рисует источник на белом фоне рамки.
         function drawToCanvas(source) {
             ctx.fillStyle = 'white';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -741,7 +754,6 @@
             ctx.drawImage(source, drawX, drawY, drawWidth, drawHeight);
         }
 
-        // Обновить превью и ссылку
         function updatePhotoFromCanvas() {
             currentImageDataUrl = canvas.toDataURL('image/png');
             photoImg.src = currentImageDataUrl;
@@ -755,7 +767,6 @@
             captureBtn.disabled = true;
         }
 
-        // Остановить камеру
         function stopCamera() {
             if (cameraStream) {
                 cameraStream.getTracks().forEach(track => track.stop());
@@ -766,7 +777,7 @@
             startCameraBtn.textContent = 'Включить камеру';
             startCameraBtn.disabled = false;
             captureBtn.disabled = true;
-            body.classList.remove('camera-active'); // Скрываем плавающую кнопку
+            body.classList.remove('camera-active');
         }
 
         // --- Камера ---
@@ -792,7 +803,7 @@
                 isCameraOn = true;
                 startCameraBtn.textContent = 'Выключить камеру';
                 captureBtn.disabled = false;
-                body.classList.add('camera-active'); // Показываем плавающую кнопку
+                body.classList.add('camera-active');
                 setStatus('active', 'Камера активна. Совместите лицо с линиями и нажмите «Сделать снимок»');
                 downloadBtn.disabled = true;
                 copyLinkBtn.disabled = true;
